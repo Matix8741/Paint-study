@@ -7,28 +7,26 @@
  * Imoprt uzywanych bibliotek
  */
 package editor;
-import java.awt.*;
-/**
- * 
- * @author Mateusz
- */
 
+import java.awt.*;
 
 /**
  *
  * @author Mateusz Rzepecki
  */
 public class Editor {
-    
-    /**
-     * Funkcja do uruchomienia projektu
-     * @param args argument komend programu
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            Window w = new Window();
-            w.setVisible(true);
-        });
-    }
-    
+
+	/**
+	 * Funkcja do uruchomienia projektu
+	 * 
+	 * @param args
+	 *            argument komend programu
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(() -> {
+			Window w = new Window();
+			w.setVisible(true);
+		});
+	}
+
 }
