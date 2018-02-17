@@ -28,6 +28,23 @@ public class Easel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Zmienne uzywane do obslugi Graphics2D
+	 */
+	private enum Figure {
+		ellipse, rectangle, generalPath
+	}
+
+	private final Map<Integer, Figure> queue;
+	private Rectangle2D.Double cover;
+	private final JFrame frame;
+	public boolean isDrawPolyLine, isDrawEllipse, isDrawRectangle;
+	private final GeneralList generalPaths;
+	private final EllipseList ellipses;
+	private final RectangleList rectangles;
+	public boolean isFirstClick;
+	private final static int MARGIN_OF_ERROR = 6;
+
+	/**
 	 * Kontruktor, sluzy do zaimplementowania Listenerow, zdefioniowaniu
 	 * uzywanych list i mapy
 	 * 
@@ -35,12 +52,12 @@ public class Easel extends JPanel {
 	 *            JFrame, do ktorego nalezy ten JPanel
 	 */
 	public Easel(JFrame frame) {
-		myframe = frame;
-		list_generalPath = new General_List();
-		list_ellipse = new Ellipse_List();
-		list_rectangle = new Rectangle_List();
-		Queue = new LinkedHashMap<>();
-		ShapeTestAdapter adapter = new ShapeTestAdapter(this);
+		this.frame = frame;
+		generalPaths = new GeneralList();
+		ellipses = new EllipseList();
+		rectangles = new RectangleList();
+		queue = new LinkedHashMap<>();
+		ShapeAdapter adapter = new ShapeAdapter(this);
 		addMouseListener(adapter);
 		addMouseMotionListener(adapter);
 		addMouseWheelListener(new ScaleHandler());
@@ -48,77 +65,61 @@ public class Easel extends JPanel {
 	}
 
 	/**
-	 * Zmienne uzywane do obslugi Graphics2D
-	 */
-	private enum what {
-		ellipse, rectangle, generalPath
-	}
-
-	private final Map<Integer, what> Queue;
-	private Rectangle2D.Double cover;
-	private final JFrame myframe;
-	public boolean ifdrawpolyline, ifdrawellipse, ifdrawrectangle;
-	private final General_List list_generalPath;
-	private final Ellipse_List list_ellipse;
-	private final Rectangle_List list_rectangle;
-	public boolean if_first_click;
-
-	/**
 	 * Funkcja, ktora rysuje okreslone objekty w programie
 	 * 
-	 * @param gp
+	 * @param graphics
 	 *            Graphics
 	 */
-	private void Drawing(Graphics gp) {
-		Graphics2D g2d = (Graphics2D) gp.create();
-		RenderingHints rh = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING,
+	private void Drawing(Graphics graphics) {
+		Graphics2D graphics2d = (Graphics2D) graphics.create();
+		RenderingHints renderingHints = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		g2d.setRenderingHints(rh);
+		graphics2d.setRenderingHints(renderingHints);
 		int i = 0;
 		int k = 0;
 		int l = 0;
-		for (what j : Queue.values()) {
-			if (j == what.ellipse) {
-				Collections.reverse(list_ellipse);
-				g2d.setColor(list_ellipse.get(i).getColor());
-				g2d.fill(list_ellipse.get(i));
-				Collections.reverse(list_ellipse);
+		for (Figure figure : queue.values()) {
+			if (figure == Figure.ellipse) {
+				Collections.reverse(ellipses);
+				graphics2d.setColor(ellipses.get(i).getColor());
+				graphics2d.fill(ellipses.get(i));
+				Collections.reverse(ellipses);
 				i++;
 			}
-			if (j == what.rectangle) {
-				Collections.reverse(list_rectangle);
-				g2d.setColor(list_rectangle.get(k).getColor());
-				g2d.fill(list_rectangle.get(k));
+			if (figure == Figure.rectangle) {
+				Collections.reverse(rectangles);
+				graphics2d.setColor(rectangles.get(k).getColor());
+				graphics2d.fill(rectangles.get(k));
 				k++;
-				Collections.reverse(list_rectangle);
+				Collections.reverse(rectangles);
 			}
-			if (j == what.generalPath) {
-				Collections.reverse(list_generalPath);
-				if (list_generalPath.get(l).isClosed()) {
-					g2d.setColor(list_generalPath.get(l).getColor());
-					g2d.fill((Shape) list_generalPath.get(l));
+			if (figure == Figure.generalPath) {
+				Collections.reverse(generalPaths);
+				if (generalPaths.get(l).isClosed()) {
+					graphics2d.setColor(generalPaths.get(l).getColor());
+					graphics2d.fill((Shape) generalPaths.get(l));
 				} else {
-					g2d.setPaint(Color.BLACK);
-					for (int n = 0; n < list_generalPath.get(l).points.size() - 1; n++) {
-						g2d.drawLine((int) list_generalPath.get(l).points.get(n).getX(),
-								(int) list_generalPath.get(l).points.get(n).getY(),
-								(int) list_generalPath.get(l).points.get(n + 1).getX(),
-								(int) list_generalPath.get(l).points.get(n + 1).getY());
+					graphics2d.setPaint(Color.BLACK);
+					for (int n = 0; n < generalPaths.get(l).points.size() - 1; n++) {
+						graphics2d.drawLine((int) generalPaths.get(l).points.get(n).getX(),
+								(int) generalPaths.get(l).points.get(n).getY(),
+								(int) generalPaths.get(l).points.get(n + 1).getX(),
+								(int) generalPaths.get(l).points.get(n + 1).getY());
 					}
 				}
 
-				Collections.reverse(list_generalPath);
+				Collections.reverse(generalPaths);
 				l++;
 			}
 		}
-		float[] dash3 = { 4f, 0f, 2f };
-		BasicStroke bs3 = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.0f, dash3, 2f);
-		g2d.setStroke(bs3);
-		g2d.setPaint(Color.BLUE);
+		float[] dash = { 4f, 0f, 2f };
+		BasicStroke basicStroke = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.0f, dash, 2f);
+		graphics2d.setStroke(basicStroke);
+		graphics2d.setPaint(Color.BLUE);
 		if (cover != null)
-			g2d.draw(cover);
+			graphics2d.draw(cover);
 		BasicStroke bs1 = new BasicStroke();
-		g2d.setStroke(bs1);
+		graphics2d.setStroke(bs1);
 	}
 
 	/**
@@ -136,11 +137,11 @@ public class Easel extends JPanel {
 	/**
 	 * Klasa do obslugi zdarzen
 	 */
-	private class ShapeTestAdapter extends MouseAdapter {
-		private what dragged;
+	private class ShapeAdapter extends MouseAdapter {
+		private Figure draggedFigure;
 		private int x;
 		private int y;
-		private final JPanel owner;
+		private final JPanel panelOwner;
 
 		/**
 		 * Konkstrukor potrzebny by klasa znala swojego JPamel wlasciciela
@@ -148,42 +149,42 @@ public class Easel extends JPanel {
 		 * @param owner
 		 *            wlasciciel klasy
 		 */
-		public ShapeTestAdapter(JPanel owner) {
+		public ShapeAdapter(JPanel owner) {
 			super();
-			this.owner = owner;
-			dragged = null;
+			this.panelOwner = owner;
+			draggedFigure = null;
 		}
 
 		/**
 		 * Klasa oblugujaca zdarzenie "nacisinieto przycisk myszy" Sluzy do
 		 * rysowania wielokata
 		 * 
-		 * @param e
+		 * @param event
 		 *            obsluga zdarzenia
 		 */
 		@Override
-		public void mouseClicked(MouseEvent e) {
-			if (ifdrawpolyline) {
-				double x = e.getX();
-				double y = e.getY();
-				if (if_first_click) {
-					Queue.put(Queue.size() + 1, what.generalPath);
-					list_generalPath.add(new NewGeneralPath(Queue.size()));
-					list_generalPath.get(list_generalPath.size() - 1).MoveTo(x, y);
-					list_generalPath.setFirst(list_generalPath.size() - 1);
+		public void mouseClicked(MouseEvent event) {
+			if (isDrawPolyLine) {
+				double x = event.getX();
+				double y = event.getY();
+				if (isFirstClick) {
+					queue.put(queue.size() + 1, Figure.generalPath);
+					generalPaths.add(0,new NewGeneralPath(queue.size()));
+					generalPaths.get(0).MoveTo(x, y);
 					repaint();
-					if_first_click = false;
+					isFirstClick = false;
 				} else {
-					double t;
-					t = list_generalPath.get(0).points.get(0).getX() - x;
-					if (Math.abs(t) < 6 && Math.abs(list_generalPath.get(0).points.get(0).getY() - y) < 6) {
-						list_generalPath.get(0).lineTo(
-								list_generalPath.get(0).points.get(list_generalPath.get(0).getAmountPnts() - 1).getX(),
-								list_generalPath.get(0).points.get(list_generalPath.get(0).getAmountPnts() - 1).getY());
-						list_generalPath.get(0).closenPath();
-						ifdrawpolyline = false;
+					double relativeDistanceFromClick;
+					relativeDistanceFromClick = generalPaths.get(0).points.get(0).getX() - x;
+					if (Math.abs(relativeDistanceFromClick) < MARGIN_OF_ERROR
+							&& Math.abs(generalPaths.get(0).points.get(0).getY() - y) < MARGIN_OF_ERROR) {
+						generalPaths.get(0).lineTo(
+								generalPaths.get(0).points.get(generalPaths.get(0).getAmountPnts() - 1).getX(),
+								generalPaths.get(0).points.get(generalPaths.get(0).getAmountPnts() - 1).getY());
+						generalPaths.get(0).closenPath();
+						isDrawPolyLine = false;
 					} else
-						list_generalPath.get(0).LineTo(x, y);
+						generalPaths.get(0).LineTo(x, y);
 					repaint();
 				}
 			}
@@ -201,15 +202,13 @@ public class Easel extends JPanel {
 			x = event.getX();
 			y = event.getY();
 			cover = null;
-			if (ifdrawellipse) {
-				Queue.put(Queue.size() + 1, what.ellipse);
-				list_ellipse.add(new NewEllipse(event.getX(), event.getY(), 1, 1, Queue.size()));
-				list_ellipse.setFirst(list_ellipse.size() - 1);
+			if (isDrawEllipse) {
+				queue.put(queue.size() + 1, Figure.ellipse);
+				ellipses.add(0,new NewEllipse(event.getX(), event.getY(), 1, 1, queue.size()));
 			}
-			if (ifdrawrectangle) {
-				Queue.put(Queue.size() + 1, what.rectangle);
-				list_rectangle.add(new NewRectangle(event.getX(), event.getY(), 1, 1, Queue.size()));
-				list_rectangle.setFirst(list_rectangle.size() - 1);
+			if (isDrawRectangle) {
+				queue.put(queue.size() + 1, Figure.rectangle);
+				rectangles.add(0,new NewRectangle(event.getX(), event.getY(), 1, 1, queue.size()));
 			}
 			repaint();
 		}
@@ -223,50 +222,50 @@ public class Easel extends JPanel {
 		@Override
 		public void mouseReleased(MouseEvent event) {
 
-			dragged = null;
-			Collections.reverse(list_ellipse);
-			Collections.reverse(list_rectangle);
-			Collections.reverse(list_generalPath);
+			draggedFigure = null;
+			Collections.reverse(ellipses);
+			Collections.reverse(rectangles);
+			Collections.reverse(generalPaths);
 			int j = 0;
 			int k = 0;
 			int m = 0;
-			ArrayList<what> iterator = new ArrayList<>();
-			iterator.addAll(Queue.values());
-			for (what i : iterator) {
-				if (i == what.rectangle) {
-					if (list_rectangle.get(j).isHit(event.getX(), event.getY())) {
+			ArrayList<Figure> iterator = new ArrayList<>();
+			iterator.addAll(queue.values());
+			for (Figure i : iterator) {
+				if (i == Figure.rectangle) {
+					if (rectangles.get(j).isHit(event.getX(), event.getY())) {
 						if (event.isPopupTrigger()) {
-							int how_many = Queue.size();
-							doPop(event, list_rectangle.get(j), owner);
-							if (how_many > Queue.size())
-								list_rectangle.remove(j);
-							cover = list_rectangle.get(j).getCover();
+							int how_many = queue.size();
+							doPop(event, rectangles.get(j), panelOwner);
+							if (how_many > queue.size())
+								rectangles.remove(j);
+							cover = rectangles.get(j).getCover();
 							repaint();
 						}
 					}
 					j++;
 				}
-				if (i == what.ellipse) {
-					if (list_ellipse.get(k).isHit(event.getX(), event.getY())) {
+				if (i == Figure.ellipse) {
+					if (ellipses.get(k).isHit(event.getX(), event.getY())) {
 						if (event.isPopupTrigger()) {
-							int how_many = Queue.size();
-							doPop(event, list_ellipse.get(k), owner);
-							if (Queue.size() < how_many)
-								list_ellipse.remove(k);
-							cover = list_ellipse.get(k).getCover();
+							int how_many = queue.size();
+							doPop(event, ellipses.get(k), panelOwner);
+							if (queue.size() < how_many)
+								ellipses.remove(k);
+							cover = ellipses.get(k).getCover();
 							repaint();
 						}
 					}
 					k++;
 				}
-				if (i == what.generalPath) {
-					if (list_generalPath.get(m).isHit(event.getX(), event.getY())) {
+				if (i == Figure.generalPath) {
+					if (generalPaths.get(m).isHit(event.getX(), event.getY())) {
 						if (event.isPopupTrigger()) {
-							int how_many = Queue.size();
-							doPop(event, list_generalPath.get(m), owner);
-							if (how_many > Queue.size())
-								list_generalPath.remove(m);
-							cover = list_generalPath.get(m).getCover();
+							int how_many = queue.size();
+							doPop(event, generalPaths.get(m), panelOwner);
+							if (how_many > queue.size())
+								generalPaths.remove(m);
+							cover = generalPaths.get(m).getCover();
 							repaint();
 						}
 					}
@@ -274,12 +273,12 @@ public class Easel extends JPanel {
 				}
 			}
 
-			Collections.reverse(list_ellipse);
-			Collections.reverse(list_rectangle);
-			Collections.reverse(list_generalPath);
+			Collections.reverse(ellipses);
+			Collections.reverse(rectangles);
+			Collections.reverse(generalPaths);
 
-			ifdrawellipse = false;
-			ifdrawrectangle = false;
+			isDrawEllipse = false;
+			isDrawRectangle = false;
 			repaint();
 		}
 
@@ -291,41 +290,35 @@ public class Easel extends JPanel {
 		 */
 		@Override
 		public void mouseDragged(MouseEvent event) {
-			if (!(ifdrawrectangle || ifdrawellipse)) {
-				if (dragged != null) {
-					switch (dragged) {
+			if (!(isDrawRectangle || isDrawEllipse)) {
+				if (draggedFigure != null) {
+					switch (draggedFigure) {
 					case ellipse:
-						for (NewEllipse eli : list_ellipse) {
-							if (eli.isHit(x, y)) {
-								list_ellipse.setFirst(eli);
-								Queue.remove(eli.nr);
-								Queue.put(eli.nr, what.ellipse);
-								doMoveE(event, eli);
-								cover = eli.getCover();
+						for (NewEllipse ellipse : ellipses) {
+							if (ellipse.isHit(x, y)) {
+								ellipses.setFirst(ellipse);
+								doMoveE(event, ellipse);
+								cover = ellipse.getCover();
 								repaint();
 								return;
 							}
 						}
 						break;
 					case rectangle:
-						for (NewRectangle rec : list_rectangle) {
-							if (rec.isHit(x, y)) {
-								Queue.remove(rec.nr);
-								Queue.put(rec.nr, what.rectangle);
-								list_rectangle.setFirst(rec);
-								doMoveR(event, rec);
-								cover = rec.getCover();
+						for (NewRectangle rectangle : rectangles) {
+							if (rectangle.isHit(x, y)) {
+								rectangles.setFirst(rectangle);
+								doMoveR(event, rectangle);
+								cover = rectangle.getCover();
 								repaint();
 								return;
 							}
 						}
 						break;
 					case generalPath:
-						for (NewGeneralPath general : list_generalPath) {
+						for (NewGeneralPath general : generalPaths) {
 							if (general.isClosed() && general.isHit(x, y)) {
-								list_generalPath.setFirst(general);
-								Queue.remove(general.nr);
-								Queue.put(general.nr, what.generalPath);
+								generalPaths.setFirst(general);
 								doMoveGP(event, general);
 								cover = general.getCover();
 								repaint();
@@ -339,14 +332,14 @@ public class Easel extends JPanel {
 				int j = 0;
 				int k = 0;
 				int l = 0;
-				ArrayList<what> iterator = new ArrayList<>();
-				iterator.addAll(Queue.values());
+				ArrayList<Figure> iterator = new ArrayList<>();
+				iterator.addAll(queue.values());
 				Collections.reverse(iterator);
-				for (what i : iterator) {
-					if (i == what.ellipse) {
-						NewEllipse eli = list_ellipse.get(j);
+				for (Figure figure : iterator) {
+					if (figure == Figure.ellipse) {
+						NewEllipse eli = ellipses.get(j);
 						if (eli.isHit(x, y)) {
-							list_ellipse.setFirst(eli);
+							ellipses.setFirst(eli);
 							doMoveE(event, eli);
 							cover = eli.getCover();
 							repaint();
@@ -354,10 +347,10 @@ public class Easel extends JPanel {
 						}
 						j++;
 					}
-					if (i == what.rectangle) {
-						NewRectangle rec = list_rectangle.get(k);
+					if (figure == Figure.rectangle) {
+						NewRectangle rec = rectangles.get(k);
 						if (rec.isHit(x, y)) {
-							list_rectangle.setFirst(rec);
+							rectangles.setFirst(rec);
 							doMoveR(event, rec);
 							cover = new Rectangle2D.Double(rec.getBounds2D().getX() - 1, rec.getBounds2D().getY() - 1,
 									rec.getBounds2D().getWidth() + 1, rec.getBounds2D().getHeight() + 1);
@@ -366,10 +359,10 @@ public class Easel extends JPanel {
 						}
 						k++;
 					}
-					if (i == what.generalPath) {
-						NewGeneralPath general = list_generalPath.get(l);
+					if (figure == Figure.generalPath) {
+						NewGeneralPath general = generalPaths.get(l);
 						if (general.isClosed() && general.isHit(x, y)) {
-							list_generalPath.setFirst(general);
+							generalPaths.setFirst(general);
 							doMoveGP(event, general);
 							cover = new Rectangle2D.Double(general.getBounds2D().getX(), general.getBounds2D().getY(),
 									general.getBounds2D().getWidth() + 1, general.getBounds2D().getHeight() + 1);
@@ -380,14 +373,14 @@ public class Easel extends JPanel {
 					}
 				}
 			}
-			if (ifdrawellipse) {
-				list_ellipse.get(0).height = event.getY() - list_ellipse.get(0).y;
-				list_ellipse.get(0).width = event.getX() - list_ellipse.get(0).x;
+			if (isDrawEllipse) {
+				ellipses.get(0).height = event.getY() - ellipses.get(0).y;
+				ellipses.get(0).width = event.getX() - ellipses.get(0).x;
 				repaint();
 			}
-			if (ifdrawrectangle) {
-				list_rectangle.get(0).height = event.getY() - list_rectangle.get(0).y;
-				list_rectangle.get(0).width = event.getX() - list_rectangle.get(0).x;
+			if (isDrawRectangle) {
+				rectangles.get(0).height = event.getY() - rectangles.get(0).y;
+				rectangles.get(0).width = event.getX() - rectangles.get(0).x;
 				repaint();
 			}
 		}
@@ -395,31 +388,31 @@ public class Easel extends JPanel {
 		/**
 		 * Funkcja sluzaca do obslugi PopupMenu dla okreslonej figury
 		 * 
-		 * @param e
+		 * @param event
 		 *            obsluga zdarzenia
-		 * @param rec
+		 * @param rectangle
 		 *            Prostokat dla ktorego wywyolujemy menu
 		 * @param panel
 		 *            panel na ktorym to sie odbywa
 		 */
-		private void doPop(MouseEvent e, NewRectangle rec, JPanel panel) {
-			MyPopupMenu menu = new MyPopupMenu(myframe, rec, panel, Queue);
-			menu.show(e.getComponent(), e.getX(), e.getY());
+		private void doPop(MouseEvent event, NewRectangle rectangle, JPanel panel) {
+			MyPopupMenu menu = new MyPopupMenu(frame, rectangle, panel, queue);
+			menu.show(event.getComponent(), event.getX(), event.getY());
 		}
 
 		/**
 		 * Funkcja sluzaca do obslugi PopupMenu dla oreslonej figury
 		 * 
-		 * @param e
+		 * @param event
 		 *            obsluga zdarzenia
-		 * @param eli
+		 * @param ellipse
 		 *            Elipsa dla ktorego wywyolujemy menu
 		 * @param panel
 		 *            panel na ktorym to sie odbywa
 		 */
-		private void doPop(MouseEvent e, NewEllipse eli, JPanel panel) {
-			MyPopupMenu menu = new MyPopupMenu(myframe, eli, panel, Queue);
-			menu.show(e.getComponent(), e.getX(), e.getY());
+		private void doPop(MouseEvent event, NewEllipse ellipse, JPanel panel) {
+			MyPopupMenu menu = new MyPopupMenu(frame, ellipse, panel, queue);
+			menu.show(event.getComponent(), event.getX(), event.getY());
 		}
 
 		/**
@@ -433,26 +426,26 @@ public class Easel extends JPanel {
 		 *            panel na ktorym to sie odbywa
 		 */
 		private void doPop(MouseEvent e, NewGeneralPath general, JPanel panel) {
-			MyPopupMenu menu = new MyPopupMenu(myframe, general, panel, Queue);
+			MyPopupMenu menu = new MyPopupMenu(frame, general, panel, queue);
 			menu.show(e.getComponent(), e.getX(), e.getY());
 		}
 
 		/**
 		 * Funkcja sluzaca do przesuwania wielokatow
 		 * 
-		 * @param e
+		 * @param event
 		 *            obsluga zdarzenia
-		 * @param general
+		 * @param generalPath
 		 *            wielokat, ktory przesuwamy
 		 */
-		private void doMoveGP(MouseEvent e, NewGeneralPath general) {
+		private void doMoveGP(MouseEvent event, NewGeneralPath generalPath) {
 
-			dragged = what.generalPath;
-			int dx = e.getX() - x;
-			int dy = e.getY() - y;
-			general.transform(AffineTransform.getTranslateInstance(dx, dy));
-			x += dx;
-			y += dy;
+			draggedFigure = Figure.generalPath;
+			int relativeX = event.getX() - x;
+			int relativeY = event.getY() - y;
+			generalPath.transform(AffineTransform.getTranslateInstance(relativeX, relativeY));
+			x += relativeX;
+			y += relativeY;
 		}
 
 		/**
@@ -465,7 +458,7 @@ public class Easel extends JPanel {
 		 */
 		private void doMoveE(MouseEvent e, NewEllipse eli) {
 
-			dragged = what.ellipse;
+			draggedFigure = Figure.ellipse;
 			int dx = e.getX() - x;
 			int dy = e.getY() - y;
 
@@ -485,7 +478,7 @@ public class Easel extends JPanel {
 		 */
 		private void doMoveR(MouseEvent e, NewRectangle rec) {
 
-			dragged = what.rectangle;
+			draggedFigure = Figure.rectangle;
 			int dx = e.getX() - x;
 			int dy = e.getY() - y;
 
@@ -505,46 +498,46 @@ public class Easel extends JPanel {
 		/**
 		 * Funkcja do obslugi krecenia scrollem
 		 * 
-		 * @param e
+		 * @param event
 		 *            obsluga zdarzenia
 		 */
 		@Override
-		public void mouseWheelMoved(MouseWheelEvent e) {
+		public void mouseWheelMoved(MouseWheelEvent event) {
 
 			int j = 0;
 			int k = 0;
 			int m = 0;
 
-			ArrayList<what> iterator = new ArrayList<>();
-			iterator.addAll(Queue.values());
-			Collections.reverse(iterator);
+			ArrayList<Figure> figures = new ArrayList<>();
+			figures.addAll(queue.values());
+			Collections.reverse(figures);
 
-			for (what i : iterator) {
+			for (Figure figure : figures) {
 
-				if (i == what.rectangle) {
-					NewRectangle rec = list_rectangle.get(j);
-					if (rec.isHit(e.getX(), e.getY())) {
-						doScale(e, rec);
+				if (figure == Figure.rectangle) {
+					NewRectangle rec = rectangles.get(j);
+					if (rec.isHit(event.getX(), event.getY())) {
+						doScale(event, rec);
 						cover = rec.getCover();
 						repaint();
 						return;
 					}
 					j++;
 				}
-				if (i == what.ellipse) {
-					NewEllipse eli = list_ellipse.get(k);
-					if (eli.isHit(e.getX(), e.getY())) {
-						doScale(e, eli);
+				if (figure == Figure.ellipse) {
+					NewEllipse eli = ellipses.get(k);
+					if (eli.isHit(event.getX(), event.getY())) {
+						doScale(event, eli);
 						cover = eli.getCover();
 						repaint();
 						return;
 					}
 					k++;
 				}
-				if (i == what.generalPath) {
-					NewGeneralPath general = list_generalPath.get(m);
-					if (general.isClosed() && general.isHit(e.getX(), e.getY())) {
-						doScale(e, general);
+				if (figure == Figure.generalPath) {
+					NewGeneralPath general = generalPaths.get(m);
+					if (general.isClosed() && general.isHit(event.getX(), event.getY())) {
+						doScale(event, general);
 						cover = general.getCover();
 						repaint();
 						return;
@@ -574,7 +567,8 @@ public class Easel extends JPanel {
 
 			}
 		}
-//zrobiæ funkcjê pracuj¹c¹ na klasie abstrakcyjnej
+
+		// zrobiæ funkcjê pracuj¹c¹ na klasie abstrakcyjnej
 		/**
 		 * Funkcja skalujaca elipse
 		 * 

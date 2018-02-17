@@ -24,8 +24,8 @@ public class Editor {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
-			Window w = new Window();
-			w.setVisible(true);
+			Window window = new Window();
+			window.setVisible(true);
 		});
 	}
 

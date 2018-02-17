@@ -12,39 +12,23 @@ import java.util.Collections;
  *
  * @author Mateusz
  */
-public class Rectangle_List extends ArrayList<NewRectangle> {
+public class GeneralList extends ArrayList<NewGeneralPath> {
 	/**
-	* 
-	*/
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * Wstawianie objektu na pirwszym miejscu w liscie
 	 * 
-	 * @param i
-	 *            z ktorego miejsca zaczynamy
 	 */
-	public void setFirst(int i) {
-		if (i < 1) {
-			return;
-		}
-		Collections.swap(this, 0, i);
-		for (int j = 1; j < i; j++) {
-			Collections.swap(this, i, j);
-		}
-	}
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Funkcja do ustawienia objektu na pierwszym miejscu w liscie
 	 * 
-	 * @param rec
+	 * @param general
 	 *            objekt, ktory chcemy zmienic
 	 */
-	public void setFirst(NewRectangle rec) {
+	public void setFirst(NewGeneralPath general) {
 		if (this.size() < 2) {
 			return;
 		}
-		int i = this.indexOf(rec);
+		int i = this.indexOf(general);
 		Collections.swap(this, 0, i);
 		for (int j = 1; j < i; j++) {
 			Collections.swap(this, i, j);

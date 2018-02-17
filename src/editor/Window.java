@@ -40,16 +40,16 @@ public class Window extends JFrame {
 		menubar = new JMenuBar();
 		menuitem1 = new JMenuItem("Prostokat");
 		menuitem1.addActionListener((java.awt.event.ActionEvent event) -> {
-			field.ifdrawrectangle = true;
+			field.isDrawRectangle = true;
 		});
 		menuitem2 = new JMenuItem("Okrag");
 		menuitem2.addActionListener((java.awt.event.ActionEvent event) -> {
-			field.ifdrawellipse = true;
+			field.isDrawEllipse = true;
 		});
 		menuitem3 = new JMenuItem("WIelokat");
 		menuitem3.addActionListener((java.awt.event.ActionEvent event) -> {
-			field.ifdrawpolyline = true;
-			field.if_first_click = true;
+			field.isDrawPolyLine = true;
+			field.isFirstClick = true;
 		});
 		info = new JMenuItem("Info");
 		info.addActionListener((java.awt.event.ActionEvent event) -> {

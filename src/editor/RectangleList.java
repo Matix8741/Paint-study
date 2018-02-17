@@ -12,14 +12,14 @@ import java.util.Collections;
  *
  * @author Mateusz
  */
-public class Ellipse_List extends ArrayList<NewEllipse> {
+public class RectangleList extends ArrayList<NewRectangle> {
 	/**
-	 * 
-	 */
+	* 
+	*/
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Wstawianie objektu na pirwszym miejscu na liscie
+	 * Wstawianie objektu na pirwszym miejscu w liscie
 	 * 
 	 * @param i
 	 *            z ktorego miejsca zaczynamy
@@ -30,7 +30,6 @@ public class Ellipse_List extends ArrayList<NewEllipse> {
 		}
 		Collections.swap(this, 0, i);
 		for (int j = 1; j < i; j++) {
-
 			Collections.swap(this, i, j);
 		}
 	}
@@ -38,17 +37,16 @@ public class Ellipse_List extends ArrayList<NewEllipse> {
 	/**
 	 * Funkcja do ustawienia objektu na pierwszym miejscu w liscie
 	 * 
-	 * @param eli
+	 * @param rec
 	 *            objekt, ktory chcemy zmienic
 	 */
-	public void setFirst(NewEllipse eli) {
+	public void setFirst(NewRectangle rec) {
 		if (this.size() < 2) {
 			return;
 		}
-		int i = this.indexOf(eli);
+		int i = this.indexOf(rec);
 		Collections.swap(this, 0, i);
 		for (int j = 1; j < i; j++) {
-
 			Collections.swap(this, i, j);
 		}
 	}

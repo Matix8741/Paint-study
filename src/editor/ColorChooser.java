@@ -22,18 +22,18 @@ public class ColorChooser extends javax.swing.JDialog {
 	/**
 	 * Konstrukor klasy JDialog
 	 * 
-	 * @param Owner
+	 * @param frameOwner
 	 *            wlasciciel Dialogu
-	 * @param modal
+	 * @param isModal
 	 *            wartosc odpowiadajaca czy Dialog jest "samodzielny"
-	 * @param rec
+	 * @param recangle
 	 *            prostokat, ktorego chcemy pomalowac
 	 * @param panel
 	 *            JPanel na ktorym pracujemy
 	 */
-	public ColorChooser(JFrame Owner, boolean modal, NewRectangle rec, JPanel panel) {
-		super(Owner, modal);
-		initComponents(rec, panel);
+	public ColorChooser(JFrame frameOwner, boolean isModal, NewRectangle recangle, JPanel panel) {
+		super(frameOwner, isModal);
+		initComponents(recangle, panel);
 	}
 
 	/**
@@ -80,21 +80,21 @@ public class ColorChooser extends javax.swing.JDialog {
 	 */
 	private void initComponents(NewRectangle rec, JPanel panel) {
 
-		jColorChooser1 = new javax.swing.JColorChooser();
-		jButton1 = new javax.swing.JButton();
+		jColorChooser = new javax.swing.JColorChooser();
+		jButton = new javax.swing.JButton();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 		getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-		getContentPane().add(jColorChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 646, 344));
+		getContentPane().add(jColorChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 646, 344));
 
-		jButton1.setText("OK");
-		jButton1.addActionListener(new java.awt.event.ActionListener() {
+		jButton.setText("OK");
+		jButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButton1ActionPerformed(evt, rec, panel);
 			}
 		});
-		getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(565, 351, -1, -1));
+		getContentPane().add(jButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(565, 351, -1, -1));
 
 		pack();
 	}
@@ -109,21 +109,21 @@ public class ColorChooser extends javax.swing.JDialog {
 	 */
 	private void initComponents(NewEllipse eli, JPanel panel) {
 
-		jColorChooser1 = new javax.swing.JColorChooser();
-		jButton1 = new javax.swing.JButton();
+		jColorChooser = new javax.swing.JColorChooser();
+		jButton = new javax.swing.JButton();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 		getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-		getContentPane().add(jColorChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 646, 344));
+		getContentPane().add(jColorChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 646, 344));
 
-		jButton1.setText("OK");
-		jButton1.addActionListener(new java.awt.event.ActionListener() {
+		jButton.setText("OK");
+		jButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButton1ActionPerformed(evt, eli, panel);
 			}
 		});
-		getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(565, 351, -1, -1));
+		getContentPane().add(jButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(565, 351, -1, -1));
 
 		pack();
 	}
@@ -138,21 +138,21 @@ public class ColorChooser extends javax.swing.JDialog {
 	 */
 	private void initComponents(NewGeneralPath general, JPanel panel) {
 
-		jColorChooser1 = new javax.swing.JColorChooser();
-		jButton1 = new javax.swing.JButton();
+		jColorChooser = new javax.swing.JColorChooser();
+		jButton = new javax.swing.JButton();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 		getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-		getContentPane().add(jColorChooser1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 646, 344));
+		getContentPane().add(jColorChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 646, 344));
 
-		jButton1.setText("OK");
-		jButton1.addActionListener(new java.awt.event.ActionListener() {
+		jButton.setText("OK");
+		jButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButton1ActionPerformed(evt, general, panel);
 			}
 		});
-		getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(565, 351, -1, -1));
+		getContentPane().add(jButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(565, 351, -1, -1));
 
 		pack();
 	}
@@ -168,7 +168,7 @@ public class ColorChooser extends javax.swing.JDialog {
 	 *            panel na ktorym pracujemy
 	 */
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt, NewRectangle rec, JPanel panel) {
-		rec.setColor(jColorChooser1.getColor());
+		rec.setColor(jColorChooser.getColor());
 		panel.repaint();
 		setVisible(false);
 	}
@@ -184,7 +184,7 @@ public class ColorChooser extends javax.swing.JDialog {
 	 *            panel na ktorym pracujemy
 	 */
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt, NewEllipse eli, JPanel panel) {
-		eli.setColor(jColorChooser1.getColor());
+		eli.setColor(jColorChooser.getColor());
 		panel.repaint();
 		setVisible(false);
 	}
@@ -200,11 +200,11 @@ public class ColorChooser extends javax.swing.JDialog {
 	 *            panel na ktorym pracujemy
 	 */
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt, NewGeneralPath general, JPanel panel) {
-		general.setColor(jColorChooser1.getColor());
+		general.setColor(jColorChooser.getColor());
 		panel.repaint();
 		setVisible(false);
 	}
 
-	private javax.swing.JButton jButton1;
-	private javax.swing.JColorChooser jColorChooser1;
+	private javax.swing.JButton jButton;
+	private javax.swing.JColorChooser jColorChooser;
 }

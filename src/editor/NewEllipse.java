@@ -24,7 +24,7 @@ public class NewEllipse extends Ellipse2D.Double {
 	/**
 	 *
 	 */
-	public final int nr;
+	public final int number;
 
 	/**
 	 * Funkcja zwracajaca kolor figury
@@ -66,7 +66,7 @@ public class NewEllipse extends Ellipse2D.Double {
 	 */
 	public NewEllipse(double x, double y, double width, double height, int nr) {
 
-		this.nr = nr;
+		this.number = nr;
 		setFrame(x, y, width, height);
 		color = Color.GRAY;
 	}
